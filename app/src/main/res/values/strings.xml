@@ -3,4 +3,13 @@
     <string name="change_dolor">画面の背景色を変えたい場合は、こちらを選択してください</string>
     <string name="wordlist">登録されている単語一覧</string>
     <string name="instruction_word_list">修正は単語をタップ、削除の場合は長押ししてください</string>
+    <string name="edit_intaraction">問題と答えを入力して登録ボタンを押してください</string>
+
+    <!-- ステータス -->
+    <string name="status_add">add_message</string>
+    <string name="status_change">edit_messange</string>
+    <string name="intent_key_status">intent_key_status</string>
+    <string name="add_message">新しい単語の追加</string>
+    <string name="edit_message">新しい単語の追加</string>
+
 </resources>
