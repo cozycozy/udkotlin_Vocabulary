@@ -12,4 +12,7 @@
     <string name="add_message">新しい単語の追加</string>
     <string name="edit_message">新しい単語の追加</string>
 
+    <string name="db_field_question">question</string>
+    <string name="db_field_answer">answer</string>
+
 </resources>
