@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_wor_list.*
 import kotlinx.android.synthetic.main.activity_word_edit.*
 
 
@@ -70,7 +69,7 @@ class WordEditActivity : AppCompatActivity() {
         realm.beginTransaction()
         val wordDb : WordDB = realm.createObject(WordDB::class.java)
         wordDb.question = editText_word.text.toString()
-        wordDb.answer = editText_translate.toString()
+        wordDb.answer = editText_translate.text.toString()
         realm.commitTransaction()
 
         //テキストボックスの値をクリア

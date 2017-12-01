@@ -37,20 +37,29 @@ class WorListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-//        realm = Realm.getDefaultInstance()
-//
-//        val results : RealmResults<WordDB> = realm.where(WordDB::class.java)
-//                .findAll()
-//                .sort(getString(R.string.db_field_question))
-//
-//        val adapter = ArrayAdapter<WordDB>(this,R.layout.activity_wor_list,results)
-//        listview.adapter = adapter
+        realm = Realm.getDefaultInstance()
+
+        val results : RealmResults<WordDB> = realm.where(WordDB::class.java)
+                .findAll()
+                .sort(getString(R.string.db_field_question))
+
+        val word_list = ArrayList<String>()
+
+        val count = results.size - 1
+
+        for (i in 0..count){
+            word_list.add(results[i]!!.answer + ":" + results[i]!!.question)
+        }
+
+        val adapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,word_list)
+
+        listview.adapter = adapter
 
     }
 
     override fun onPause() {
         super.onPause()
-//        realm.close()
+        realm.close()
     }
 
 }
