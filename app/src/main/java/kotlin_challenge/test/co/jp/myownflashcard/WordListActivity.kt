@@ -15,6 +15,8 @@ class WorListActivity : AppCompatActivity(), AdapterView.OnItemClickListener, Ad
 
     lateinit var realm : Realm
     lateinit var results : RealmResults<WordDB>
+    lateinit var word_list : ArrayList<String>
+    lateinit var adapter : ArrayAdapter<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,18 +51,33 @@ class WorListActivity : AppCompatActivity(), AdapterView.OnItemClickListener, Ad
         val selectedQuestion = selectDB.question
         val selectedAnswer = selectDB.answer
 
-        val intent = Intent(this@WorListActivity, WordEditActivity::class.java)
-        intent.putExtra(getString(R.string.intent_key_question),selectedQuestion)
-        intent.putExtra(getString(R.string.intent_key_answer),selectedAnswer)
-        intent.putExtra(getString(R.string.intent_key_position),position)
-        intent.putExtra(getString(R.string.intent_key_status),getString(R.string.status_change))
+        val intent = Intent(this@WorListActivity, WordEditActivity::class.java).apply {
+            putExtra(getString(R.string.intent_key_question),selectedQuestion)
+            putExtra(getString(R.string.intent_key_answer),selectedAnswer)
+            putExtra(getString(R.string.intent_key_position),position)
+            putExtra(getString(R.string.intent_key_status),getString(R.string.status_change))
+        }
         startActivity(intent)
-
     }
 
     //長押しした場合
-    override fun onItemLongClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onItemLongClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long): Boolean {
+
+        val selecteDBB = results[position]!!
+
+        //DBから削除
+        realm.beginTransaction()
+        selecteDBB.deleteFromRealm()
+        realm.commitTransaction()
+
+        //Adapterからも削除
+        word_list.removeAt(position)
+
+        //Listviwに反映
+        listview.adapter = adapter
+
+        return true
+
     }
 
 
@@ -72,7 +89,7 @@ class WorListActivity : AppCompatActivity(), AdapterView.OnItemClickListener, Ad
                 .findAll()
                 .sort(getString(R.string.db_field_question))
 
-        val word_list = ArrayList<String>()
+        word_list = ArrayList<String>()
 
         val count = results.size - 1
 
@@ -84,7 +101,7 @@ class WorListActivity : AppCompatActivity(), AdapterView.OnItemClickListener, Ad
             word_list.add(it.answer + ":" + it.question)
         }
 
-        val adapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,word_list)
+        adapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,word_list)
 
         listview.adapter = adapter
 
