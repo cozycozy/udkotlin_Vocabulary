@@ -19,6 +19,7 @@
     <string name="intent_key_question">intent_key_question</string>
     <string name="intent_key_answer">intent_key_answer</string>
     <string name="intent_key_position">intent_key_position</string>
+    <string name="intent_key_memory_flag">intent_key_memory_flag</string>
 
     <!--ラジオボタンのテキスト-->
     <string name="top_radio_text1">暗記済みの単語を除外する</string>

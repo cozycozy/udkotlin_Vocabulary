@@ -1,7 +1,7 @@
 package kotlin_challenge.test.co.jp.myownflashcard
 
-import io.realm.Realm
 import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
 /**
  * Created by koji_mitake on 2017/11/28.
@@ -10,9 +10,13 @@ import io.realm.RealmObject
 open class WordDB : RealmObject() {
 
     //質問
-    var question : String? = null
+    @PrimaryKey
+    open var question : String? = null
 
     //答え
-    var answer : String? = null
+    open var answer : String? = null
+
+    //暗記済みフラグ
+    open var memory_flg : Boolean = false
 
 }

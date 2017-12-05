@@ -87,24 +87,32 @@ class WorListActivity : AppCompatActivity(), AdapterView.OnItemClickListener, Ad
 
         results = realm.where(WordDB::class.java)
                 .findAll()
-                .sort(getString(R.string.db_field_question))
+                .sort(getString(R.string.db_field_answer))
 
         word_list = ArrayList<String>()
 
         val count = results.size - 1
 
 //        for (i in 0..count){
-//            word_list.add(results[i]!!.answer + ":" + results[i]!!.question)
+//            if(results[i].memory_flg){
+//                word_list.add(results[i]!!.answer + ":" + results[i]!!.question + "【暗記済み】")
+//            } else {
+//                word_list.add(results[i]!!.answer + ":" + results[i]!!.question)
+//            }
+//
 //        }
 
         results.forEach {
-            word_list.add(it.answer + ":" + it.question)
+            if(it.memory_flg){
+                word_list.add(it.answer + ":" + it.question + "【暗記済み】")
+            } else {
+                word_list.add(it.answer + ":" + it.question)
+            }
         }
 
         adapter = ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,word_list)
 
         listview.adapter = adapter
-
     }
 
     override fun onPause() {

@@ -1,9 +1,8 @@
 package kotlin_challenge.test.co.jp.myownflashcard
 
-import android.annotation.SuppressLint
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 //色を変更する
@@ -14,6 +13,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //テスト実施ボタンを押した場合
+        button_test.setOnClickListener {
+            intent = Intent(this@MainActivity,TestActivity::class.java)
+
+            when(radioGroup.checkedRadioButtonId) {
+                R.id.radioButton1 -> intent.putExtra(getString(R.string.intent_key_memory_flag), true)
+                R.id.radioButton2 -> intent.putExtra(getString(R.string.intent_key_memory_flag),false )
+            }
+            startActivity(intent)
+        }
 
         //編集ボタンをおした時
         button_edit.setOnClickListener {
