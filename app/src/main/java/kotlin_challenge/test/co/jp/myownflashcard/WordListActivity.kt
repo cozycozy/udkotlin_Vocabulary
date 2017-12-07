@@ -2,6 +2,7 @@ package kotlin_challenge.test.co.jp.myownflashcard
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.AdapterView
@@ -31,8 +32,8 @@ class WorListActivity : AppCompatActivity(), AdapterView.OnItemClickListener, Ad
 
         //追加ボタンをおした時
         buttonAddNewWord.setOnClickListener {
-            val intent : Intent = Intent(this@WorListActivity,WordEditActivity::class.java)
-            intent.putExtra(getString(R.string.intent_key_status),getString(R.string.status_add))
+            val intent: Intent = Intent(this@WorListActivity, WordEditActivity::class.java)
+            intent.putExtra(getString(R.string.intent_key_status), getString(R.string.status_add))
             startActivity(intent)
         }
 
@@ -41,7 +42,27 @@ class WorListActivity : AppCompatActivity(), AdapterView.OnItemClickListener, Ad
             finish()
         }
 
+        //ソートをおした時
+        buttonSort.setOnClickListener {
+            results = realm.where<WordDB>(WordDB::class.java)
+                    .findAll()
+                    .sort(getString(R.string.db_field_memory_flg))
+
+            //初期化
+            word_list.clear()
+
+            results.forEach {
+                if (it.memory_flg) {
+                    word_list.add(it.answer + ":" + it.question + "【暗記済み】")
+                } else {
+                    word_list.add(it.answer + ":" + it.question)
+                }
+
+            }
+            listview.adapter = adapter
+        }
     }
+
 
     //タップした場合
     override fun onItemClick(p0: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -63,18 +84,35 @@ class WorListActivity : AppCompatActivity(), AdapterView.OnItemClickListener, Ad
     //長押しした場合
     override fun onItemLongClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long): Boolean {
 
-        val selecteDBB = results[position]!!
+        //データ取得
+        val selecteDB = results[position]!!
 
-        //DBから削除
-        realm.beginTransaction()
-        selecteDBB.deleteFromRealm()
-        realm.commitTransaction()
+        val dialog = AlertDialog.Builder(this@WorListActivity).apply {
 
-        //Adapterからも削除
-        word_list.removeAt(position)
+            setTitle(selecteDB.answer + "確認")
+            setMessage("削除してよろしいですか？")
 
-        //Listviwに反映
-        listview.adapter = adapter
+            setPositiveButton("OK"){dialogInterface, i ->
+
+                //DBから削除
+                realm.beginTransaction()
+                selecteDB.deleteFromRealm()
+                realm.commitTransaction()
+
+                //Adapterからも削除
+                word_list.removeAt(position)
+
+                //Listviwに反映
+                listview.adapter = adapter
+
+            }
+            setNegativeButton("Cancel"){ dialogInterface, i ->
+
+            }
+
+            show()
+
+        }
 
         return true
 

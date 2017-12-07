@@ -1,10 +1,12 @@
 package kotlin_challenge.test.co.jp.myownflashcard
 
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import io.realm.Realm
 import io.realm.RealmResults
+import io.realm.exceptions.RealmPrimaryKeyConstraintException
 import kotlinx.android.synthetic.main.activity_word_edit.*
 
 
@@ -27,8 +29,9 @@ class WordEditActivity : AppCompatActivity() {
         val bundle = intent.extras
         val status = bundle.getString(getString(R.string.intent_key_status))
 
-        if (status == R.string.status_add.toString()){
+        if (status == getString(R.string.status_add)){
             textView_Status.text = getString(R.string.add_message)
+            editText_word.isEnabled = true
         }else {
             textView_Status.text = getString(R.string.edit_message)
             strQestion = bundle.getString(getString(R.string.intent_key_question))
@@ -38,6 +41,8 @@ class WordEditActivity : AppCompatActivity() {
             //値の設定
             editText_word.setText(strQestion)
             editText_translate.setText(strAnswer)
+            editText_word.isEnabled = false
+
         }
 
         //背景色の設定
@@ -79,39 +84,76 @@ class WordEditActivity : AppCompatActivity() {
     //単語の登録
     private fun addNewWord() {
 
-        //DBへの登録
-        realm.beginTransaction()
-        val wordDb : WordDB = realm.createObject(WordDB::class.java)
-        wordDb.question = editText_word.text.toString()
-        wordDb.answer = editText_translate.text.toString()
-        realm.commitTransaction()
+        val dialog = AlertDialog.Builder(this@WordEditActivity).apply {
 
-        //テキストボックスの値をクリア
-        editText_translate.setText("")
-        editText_word.setText("")
+            try {
+                setTitle("登録")
+                setMessage("登録していいですか？")
+                setPositiveButton("はい"){ dialogInterface, i ->
+                    //DBへの登録
+                    realm.beginTransaction()
+                    val wordDb : WordDB = realm.createObject(WordDB::class.java,editText_word.text.toString())
+                    //wordDb.question = editText_word.text.toString()
+                    wordDb.answer = editText_translate.text.toString()
+                    wordDb.memory_flg = false
 
-        //メッセージの表示
-        Toast.makeText(this@WordEditActivity,"登録が完了しました",Toast.LENGTH_SHORT).show()
+                    //メッセージの表示
+                    Toast.makeText(this@WordEditActivity,"登録が完了しました",Toast.LENGTH_SHORT).show()
+                }
+                setNegativeButton("いいえ"){ dialogInterface, i -> }
+                show()
+
+            } catch (e: RealmPrimaryKeyConstraintException) {
+                Toast.makeText(this@WordEditActivity,"その単語はすでに登録されています",
+                        Toast.LENGTH_SHORT).show()
+            } finally {
+                //テキストボックスの値をクリア
+                editText_translate.setText("")
+                editText_word.setText("")
+
+                //コミット
+                realm.commitTransaction()
+
+            }
+
+        }
     }
 
     //単語の編集
     private fun editWord(){
+
         results = realm.where(WordDB::class.java).findAll().sort(getString(R.string.db_field_question))
         val selectedDB = results[position]!!
 
-        realm.beginTransaction()
-        selectedDB.question = editText_word.text.toString()
-        selectedDB.answer = editText_translate.text.toString()
-        realm.commitTransaction()
+        val daialog = AlertDialog.Builder(this@WordEditActivity).apply {
+            setTitle(selectedDB.answer + "の変更")
+            setMessage("変更していいですか？")
+            setPositiveButton("はい"){ dialogInterface,i ->
 
-        //テキストボックスの値をクリア
-        editText_translate.setText("")
-        editText_word.setText("")
+                realm.beginTransaction()
+                selectedDB.question = editText_word.text.toString()
+                selectedDB.answer = editText_translate.text.toString()
+                selectedDB.memory_flg = false
+                realm.commitTransaction()
 
-        Toast.makeText(this@WordEditActivity,"更新が完了しました",Toast.LENGTH_SHORT)
+                //テキストボックスの値をクリア
+                editText_translate.setText("")
+                editText_word.setText("")
 
-        //前の画面に戻る
-        finish()
+                Toast.makeText(this@WordEditActivity,"更新が完了しました",Toast.LENGTH_SHORT)
+
+                //前の画面に戻る
+                finish()
+
+            }
+            setNegativeButton("いいえ"){ dialogInterface, i ->  }
+            show()
+        }
+    }
+
+    private fun showDailog(type : Int){
+
 
     }
+
 }
