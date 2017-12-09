@@ -85,8 +85,6 @@ class WordEditActivity : AppCompatActivity() {
     private fun addNewWord() {
 
         val dialog = AlertDialog.Builder(this@WordEditActivity).apply {
-
-            try {
                 setTitle("登録")
                 setMessage("登録していいですか？")
                 setPositiveButton("はい"){ dialogInterface, i ->
@@ -97,24 +95,51 @@ class WordEditActivity : AppCompatActivity() {
                     wordDb.answer = editText_translate.text.toString()
                     wordDb.memory_flg = false
 
+                    editText_translate.setText("")
+                    editText_word.setText("")
+
+                    //コミット
+                    realm.commitTransaction()
+
                     //メッセージの表示
                     Toast.makeText(this@WordEditActivity,"登録が完了しました",Toast.LENGTH_SHORT).show()
+
                 }
                 setNegativeButton("いいえ"){ dialogInterface, i -> }
                 show()
 
-            } catch (e: RealmPrimaryKeyConstraintException) {
-                Toast.makeText(this@WordEditActivity,"その単語はすでに登録されています",
-                        Toast.LENGTH_SHORT).show()
-            } finally {
-                //テキストボックスの値をクリア
-                editText_translate.setText("")
-                editText_word.setText("")
 
-                //コミット
-                realm.commitTransaction()
 
-            }
+
+//            try {
+//                setTitle("登録")
+//                setMessage("登録していいですか？")
+//                setPositiveButton("はい"){ dialogInterface, i ->
+//                    //DBへの登録
+//                    realm.beginTransaction()
+//                    val wordDb : WordDB = realm.createObject(WordDB::class.java,editText_word.text.toString())
+//                    //wordDb.question = editText_word.text.toString()
+//                    wordDb.answer = editText_translate.text.toString()
+//                    wordDb.memory_flg = false
+//
+//                    //メッセージの表示
+//                    Toast.makeText(this@WordEditActivity,"登録が完了しました",Toast.LENGTH_SHORT).show()
+//                }
+//                setNegativeButton("いいえ"){ dialogInterface, i -> }
+//                show()
+//
+//            } catch (e: RealmPrimaryKeyConstraintException) {
+//                Toast.makeText(this@WordEditActivity,"その単語はすでに登録されています",
+//                        Toast.LENGTH_SHORT).show()
+//            } finally {
+//                //テキストボックスの値をクリア
+//                editText_translate.setText("")
+//                editText_word.setText("")
+//
+//                //コミット
+//                realm.commitTransaction()
+//
+//            }
 
         }
     }
@@ -131,7 +156,7 @@ class WordEditActivity : AppCompatActivity() {
             setPositiveButton("はい"){ dialogInterface,i ->
 
                 realm.beginTransaction()
-                selectedDB.question = editText_word.text.toString()
+                //selectedDB.question = editText_word.text.toString()
                 selectedDB.answer = editText_translate.text.toString()
                 selectedDB.memory_flg = false
                 realm.commitTransaction()
@@ -149,11 +174,6 @@ class WordEditActivity : AppCompatActivity() {
             setNegativeButton("いいえ"){ dialogInterface, i ->  }
             show()
         }
-    }
-
-    private fun showDailog(type : Int){
-
-
     }
 
 }
